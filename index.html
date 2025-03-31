@@ -1,73 +1,400 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-            background-color: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-        }
-        .container {
-            max-width: 400px;
-            margin: auto;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            color: var(--tg-theme-text-color, #000);
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            background-color: var(--tg-theme-button-color, #007bff);
-            color: var(--tg-theme-button-text-color, #fff);
-            cursor: pointer;
-        }
-        button:active {
-            opacity: 0.8;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: var(--tg-theme-bg-color, #f8f9fa);
+      color: var(--tg-theme-text-color, #212529);
+    }
+
+    .container {
+      width: 90%;
+      max-width: 400px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      background: var(--tg-theme-bg-color, #ffffff);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 30px 10px 10px;
+      border: 1px solid var(--tg-theme-hint-color, #ced4da);
+      border-radius: 8px;
+      background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+      color: var(--tg-theme-text-color, #000);
+      font-size: 16px;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #999;
+      padding: 0;
+      margin: 0;
+      line-height: 1;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .clear-btn:hover {
+      color: #666;
+    }
+
+    .toggle-section {
+      cursor: pointer;
+      font-weight: bold;
+      padding: 12px 15px;
+      border-radius: 8px;
+      background-color: var(--tg-theme-secondary-bg-color, #e9ecef);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.2s;
+    }
+
+    .toggle-section:hover {
+      background-color: var(--tg-theme-secondary-bg-color, #dee2e6);
+    }
+
+    .content {
+      display: none;
+      margin-bottom: 15px;
+      padding: 0 5px;
+    }
+
+    /* Custom iOS style switches */
+    .switch-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+    }
+
+    .switch-label {
+      font-weight: bold;
+      color: var(--tg-theme-text-color, #333);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      padding: 0;
+      position: absolute;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: #4CAF50;
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(26px);
+    }
+
+    .arrow {
+      transition: transform 0.3s;
+      color: var(--tg-theme-hint-color, #6c757d);
+    }
+
+    .arrow.open {
+      transform: rotate(180deg);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: var(--tg-theme-button-color, #007bff);
+      color: var(--tg-theme-button-text-color, #fff);
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--tg-theme-button-color, #0069d9);
+    }
+
+    .highlighted {
+      background-color: var(--tg-theme-secondary-bg-color, #f8f9fa);
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <h2>Введите данные</h2>
-        <input type="text" id="name" placeholder="Имя">
-        <input type="number" id="age" placeholder="Возраст">
-        <button onclick="sendData()">Отправить</button>
+  <div class="container">
+    <h2>Настройки API</h2>
+    <div class="form-group">
+      <label>API URL</label>
+      <div class="input-wrapper">
+        <input type="text" id="api_kriptainvest">
+        <button class="clear-btn" onclick="clearField('api_kriptainvest')">×</button>
+      </div>
     </div>
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand(); // Расширяем на весь экран
+    <div class="toggle-section" onclick="toggleSection('strategy1')">
+      <span>Стратегия 1</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div id="strategy1" class="content">
+      <div class="form-group">
+        <label>API KEY</label>
+        <div class="input-wrapper">
+          <input type="text" id="apiKey1">
+          <button class="clear-btn" onclick="clearField('apiKey1')">×</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>SECRET</label>
+        <div class="input-wrapper">
+          <input type="text" id="secret1">
+          <button class="clear-btn" onclick="clearField('secret1')">×</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>PASS API</label>
+        <div class="input-wrapper">
+          <input type="text" id="passApi1">
+          <button class="clear-btn" onclick="clearField('passApi1')">×</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Процент</label>
+        <input type="number" id="percent1">
+      </div>
+      <div class="form-group">
+        <label>Стоп</label>
+        <input type="number" id="stop1">
+      </div>
+      <div class="form-group">
+        <label>Профит</label>
+        <input type="number" id="profit1">
+      </div>
 
-        function sendData() {
-            const name = document.getElementById("name").value.trim();
-            const age = document.getElementById("age").value.trim();
+      <div class="highlighted">
+        <div class="switch-container">
+          <span class="switch-label">Тест</span>
+          <label class="switch">
+            <input type="checkbox" id="test1">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="switch-container">
+          <span class="switch-label">Активный</span>
+          <label class="switch">
+            <input type="checkbox" id="active1">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
 
-            if (!name || !age) {
-                alert("Заполните все поля!");
-                return;
-            }
+    <div class="toggle-section" onclick="toggleSection('strategy2')">
+      <span>Стратегия 2</span>
+      <span class="arrow">▼</span>
+    </div>
+    <div id="strategy2" class="content">
+      <div class="form-group">
+        <label>API KEY</label>
+        <div class="input-wrapper">
+          <input type="text" id="apiKey2">
+          <button class="clear-btn" onclick="clearField('apiKey2')">×</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>SECRET</label>
+        <div class="input-wrapper">
+          <input type="text" id="secret2">
+          <button class="clear-btn" onclick="clearField('secret2')">×</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>PASS API</label>
+        <div class="input-wrapper">
+          <input type="text" id="passApi2">
+          <button class="clear-btn" onclick="clearField('passApi2')">×</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Процент</label>
+        <input type="number" id="percent2">
+      </div>
+      <div class="form-group">
+        <label>Стоп</label>
+        <input type="number" id="stop2">
+      </div>
+      <div class="form-group">
+        <label>Профит</label>
+        <input type="number" id="profit2">
+      </div>
 
-            const data = JSON.stringify({ name, age });
-            tg.sendData(data);
-            tg.close();
+      <div class="highlighted">
+        <div class="switch-container">
+          <span class="switch-label">Тест</span>
+          <label class="switch">
+            <input type="checkbox" id="test2">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="switch-container">
+          <span class="switch-label">Активный</span>
+          <label class="switch">
+            <input type="checkbox" id="active2">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="sendData()">Сохранить</button>
+  </div>
+
+  <script>
+    function clearField(id) {
+      document.getElementById(id).value = "";
+    }
+
+    function toggleSection(id) {
+      let section = document.getElementById(id);
+      let arrow = section.previousElementSibling.querySelector('.arrow');
+
+      if (section.style.display === "block") {
+        section.style.display = "none";
+        arrow.classList.remove('open');
+      } else {
+        section.style.display = "block";
+        arrow.classList.add('open');
+      }
+    }
+
+    function sendData() {
+      let data = {
+        api_kriptainvest: document.getElementById("api_kriptainvest").value,
+        strategy_1: {
+          APIKEY_OKX: document.getElementById("apiKey1").value,
+          SECRET_OKX: document.getElementById("secret1").value,
+          PASS_API_OKX: document.getElementById("passApi1").value,
+          PERCENT: parseFloat(document.getElementById("percent1").value),
+          STOP: parseFloat(document.getElementById("stop1").value),
+          PROFIT: parseFloat(document.getElementById("profit1").value),
+          TEST: document.getElementById("test1").checked,
+          ACTIVE: document.getElementById("active1").checked
+        },
+        strategy_2: {
+          APIKEY_OKX: document.getElementById("apiKey2").value,
+          SECRET_OKX: document.getElementById("secret2").value,
+          PASS_API_OKX: document.getElementById("passApi2").value,
+          PERCENT: parseFloat(document.getElementById("percent2").value),
+          STOP: parseFloat(document.getElementById("stop2").value),
+          PROFIT: parseFloat(document.getElementById("profit2").value),
+          TEST: document.getElementById("test2").checked,
+          ACTIVE: document.getElementById("active2").checked
         }
-    </script>
+      };
+      window.Telegram.WebApp.sendData(JSON.stringify(data));
+    }
+
+    window.onload = function () {
+      let initData = window.Telegram.WebApp.initDataUnsafe;
+      if (initData && initData.query_id) {
+        let storedData = JSON.parse(initData.user.data || '{}');
+        document.getElementById("api_kriptainvest").value = storedData.api_kriptainvest || "";
+        document.getElementById("apiKey1").value = storedData.strategy_1?.APIKEY_OKX || "";
+        document.getElementById("secret1").value = storedData.strategy_1?.SECRET_OKX || "";
+        document.getElementById("passApi1").value = storedData.strategy_1?.PASS_API_OKX || "";
+        document.getElementById("percent1").value = storedData.strategy_1?.PERCENT || "";
+        document.getElementById("stop1").value = storedData.strategy_1?.STOP || "";
+        document.getElementById("profit1").value = storedData.strategy_1?.PROFIT || "";
+        document.getElementById("test1").checked = storedData.strategy_1?.TEST || false;
+        document.getElementById("active1").checked = storedData.strategy_1?.ACTIVE || false;
+
+        document.getElementById("apiKey2").value = storedData.strategy_2?.APIKEY_OKX || "";
+        document.getElementById("secret2").value = storedData.strategy_2?.SECRET_OKX || "";
+        document.getElementById("passApi2").value = storedData.strategy_2?.PASS_API_OKX || "";
+        document.getElementById("percent2").value = storedData.strategy_2?.PERCENT || "";
+        document.getElementById("stop2").value = storedData.strategy_2?.STOP || "";
+        document.getElementById("profit2").value = storedData.strategy_2?.PROFIT || "";
+        document.getElementById("test2").checked = storedData.strategy_2?.TEST || false;
+        document.getElementById("active2").checked = storedData.strategy_2?.ACTIVE || false;
+      }
+    }
+  </script>
 </body>
+
 </html>
