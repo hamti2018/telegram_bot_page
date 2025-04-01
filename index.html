@@ -4,38 +4,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telegram Mini App</title>
+  <title>OKX - BOT</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
       background-color: var(--tg-theme-bg-color, #f8f9fa);
       color: var(--tg-theme-text-color, #212529);
+      padding: 20px;
+      box-sizing: border-box;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     .container {
-      width: 90%;
+      width: 100%;
       max-width: 400px;
+      margin: 0 auto;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
       background: var(--tg-theme-bg-color, #ffffff);
-      text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .content-wrapper {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding-bottom: 20px;
     }
 
     h2 {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      text-align: center;
     }
 
     .form-group {
       text-align: left;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--tg-theme-text-color, #495057);
     }
 
     .input-wrapper {
@@ -44,7 +63,7 @@
 
     input {
       width: 100%;
-      padding: 10px 30px 10px 10px;
+      padding: 12px 35px 12px 12px;
       border: 1px solid var(--tg-theme-hint-color, #ced4da);
       border-radius: 8px;
       background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
@@ -52,11 +71,16 @@
       font-size: 16px;
       outline: none;
       box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--tg-theme-button-color, #007bff);
     }
 
     .clear-btn {
       position: absolute;
-      right: 8px;
+      right: 10px;
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
@@ -81,33 +105,47 @@
     .toggle-section {
       cursor: pointer;
       font-weight: bold;
-      padding: 12px 15px;
+      padding: 15px;
       border-radius: 8px;
       background-color: var(--tg-theme-secondary-bg-color, #e9ecef);
       margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: background-color 0.2s;
+      transition: all 0.2s;
+      border: 1px solid var(--tg-theme-secondary-bg-color, #e9ecef);
     }
 
     .toggle-section:hover {
       background-color: var(--tg-theme-secondary-bg-color, #dee2e6);
+      border-color: var(--tg-theme-hint-color, #ced4da);
+    }
+
+    .toggle-section.active {
+      margin-bottom: 0;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
     }
 
     .content {
       display: none;
       margin-bottom: 15px;
-      padding: 0 5px;
+      padding: 15px;
+      border: 1px solid var(--tg-theme-secondary-bg-color, #e9ecef);
+      border-top: none;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      background-color: var(--tg-theme-bg-color, #ffffff);
     }
 
-    /* Custom iOS style switches */
     .switch-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--tg-theme-hint-color, #e0e0e0);
+      padding: 12px 15px;
+      margin: 8px 0;
+      background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+      border-radius: 8px;
     }
 
     .switch-label {
@@ -173,7 +211,7 @@
 
     button {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       margin-top: 10px;
       border: none;
       border-radius: 8px;
@@ -190,9 +228,7 @@
     }
 
     .highlighted {
-      background-color: var(--tg-theme-secondary-bg-color, #f8f9fa);
-      border-radius: 8px;
-      margin-top: 10px;
+      margin-top: 15px;
     }
   </style>
 </head>
@@ -200,125 +236,130 @@
 <body>
   <div class="container">
     <h2>Настройки API</h2>
-    <div class="form-group">
-      <label>API URL</label>
-      <div class="input-wrapper">
-        <input type="text" id="api_kriptainvest">
-        <button class="clear-btn" onclick="clearField('api_kriptainvest')">×</button>
-      </div>
-    </div>
 
-    <div class="toggle-section" onclick="toggleSection('strategy1')">
-      <span>Стратегия 1</span>
-      <span class="arrow">▼</span>
-    </div>
-    <div id="strategy1" class="content">
+    <div class="content-wrapper">
       <div class="form-group">
-        <label>API KEY</label>
+        <label>API KRIPTAINVEST URL</label>
         <div class="input-wrapper">
-          <input type="text" id="apiKey1">
-          <button class="clear-btn" onclick="clearField('apiKey1')">×</button>
+          <input type="text" id="api_kriptainvest">
+          <button class="clear-btn" onclick="clearField('api_kriptainvest')">×</button>
         </div>
-      </div>
-      <div class="form-group">
-        <label>SECRET</label>
-        <div class="input-wrapper">
-          <input type="text" id="secret1">
-          <button class="clear-btn" onclick="clearField('secret1')">×</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>PASS API</label>
-        <div class="input-wrapper">
-          <input type="text" id="passApi1">
-          <button class="clear-btn" onclick="clearField('passApi1')">×</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Процент</label>
-        <input type="number" id="percent1">
-      </div>
-      <div class="form-group">
-        <label>Стоп</label>
-        <input type="number" id="stop1">
-      </div>
-      <div class="form-group">
-        <label>Профит</label>
-        <input type="number" id="profit1">
       </div>
 
-      <div class="highlighted">
-        <div class="switch-container">
-          <span class="switch-label">Тест</span>
-          <label class="switch">
-            <input type="checkbox" id="test1">
-            <span class="slider"></span>
-          </label>
+      <div id="strategescontainer">
+        <!--  <div class="toggle-section" onclick="toggleSection('strategy1')">
+          <span>Стратегия 1</span>
+          <span class="arrow">▼</span>
         </div>
-        <div class="switch-container">
-          <span class="switch-label">Активный</span>
-          <label class="switch">
-            <input type="checkbox" id="active1">
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </div>
+        <div id="strategy1" class="content">
+          <div class="form-group">
+            <label>API KEY</label>
+            <div class="input-wrapper">
+              <input type="text" id="apiKey1">
+              <button class="clear-btn" onclick="clearField('apiKey1')">×</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>SECRET</label>
+            <div class="input-wrapper">
+              <input type="text" id="secret1">
+              <button class="clear-btn" onclick="clearField('secret1')">×</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>PASS API</label>
+            <div class="input-wrapper">
+              <input type="text" id="passApi1">
+              <button class="clear-btn" onclick="clearField('passApi1')">×</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Процент</label>
+            <input type="number" id="percent1">
+          </div>
+          <div class="form-group">
+            <label>Стоп</label>
+            <input type="number" id="stop1">
+          </div>
+          <div class="form-group">
+            <label>Профит</label>
+            <input type="number" id="profit1">
+          </div>
 
-    <div class="toggle-section" onclick="toggleSection('strategy2')">
-      <span>Стратегия 2</span>
-      <span class="arrow">▼</span>
-    </div>
-    <div id="strategy2" class="content">
-      <div class="form-group">
-        <label>API KEY</label>
-        <div class="input-wrapper">
-          <input type="text" id="apiKey2">
-          <button class="clear-btn" onclick="clearField('apiKey2')">×</button>
+          <div class="highlighted">
+            <div class="switch-container">
+              <span class="switch-label">Тест</span>
+              <label class="switch">
+                <input type="checkbox" id="test1">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="switch-container">
+              <span class="switch-label">Активный</span>
+              <label class="switch">
+                <input type="checkbox" id="active1">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="form-group">
-        <label>SECRET</label>
-        <div class="input-wrapper">
-          <input type="text" id="secret2">
-          <button class="clear-btn" onclick="clearField('secret2')">×</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>PASS API</label>
-        <div class="input-wrapper">
-          <input type="text" id="passApi2">
-          <button class="clear-btn" onclick="clearField('passApi2')">×</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Процент</label>
-        <input type="number" id="percent2">
-      </div>
-      <div class="form-group">
-        <label>Стоп</label>
-        <input type="number" id="stop2">
-      </div>
-      <div class="form-group">
-        <label>Профит</label>
-        <input type="number" id="profit2">
-      </div>
 
-      <div class="highlighted">
-        <div class="switch-container">
-          <span class="switch-label">Тест</span>
-          <label class="switch">
-            <input type="checkbox" id="test2">
-            <span class="slider"></span>
-          </label>
+        <div class="toggle-section" onclick="toggleSection('strategy2')">
+          <span>Стратегия 2</span>
+          <span class="arrow">▼</span>
         </div>
-        <div class="switch-container">
-          <span class="switch-label">Активный</span>
-          <label class="switch">
-            <input type="checkbox" id="active2">
-            <span class="slider"></span>
-          </label>
-        </div>
+        <div id="strategy2" class="content">
+          <div class="form-group">
+            <label>API KEY</label>
+            <div class="input-wrapper">
+              <input type="text" id="apiKey2">
+              <button class="clear-btn" onclick="clearField('apiKey2')">×</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>SECRET</label>
+            <div class="input-wrapper">
+              <input type="text" id="secret2">
+              <button class="clear-btn" onclick="clearField('secret2')">×</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>PASS API</label>
+            <div class="input-wrapper">
+              <input type="text" id="passApi2">
+              <button class="clear-btn" onclick="clearField('passApi2')">×</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Процент</label>
+            <input type="number" id="percent2">
+          </div>
+          <div class="form-group">
+            <label>Стоп</label>
+            <input type="number" id="stop2">
+          </div>
+          <div class="form-group">
+            <label>Профит</label>
+            <input type="number" id="profit2">
+          </div>
+
+          <div class="highlighted">
+            <div class="switch-container">
+              <span class="switch-label">Тест</span>
+              <label class="switch">
+                <input type="checkbox" id="test2">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="switch-container">
+              <span class="switch-label">Активный</span>
+              <label class="switch">
+                <input type="checkbox" id="active2">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div> -->
       </div>
     </div>
 
@@ -331,68 +372,135 @@
     }
 
     function toggleSection(id) {
-      let section = document.getElementById(id);
-      let arrow = section.previousElementSibling.querySelector('.arrow');
+      const section = document.getElementById(id);
+      const toggle = section.previousElementSibling;
+      const arrow = toggle.querySelector('.arrow');
 
       if (section.style.display === "block") {
         section.style.display = "none";
         arrow.classList.remove('open');
+        toggle.classList.remove('active');
       } else {
         section.style.display = "block";
         arrow.classList.add('open');
+        toggle.classList.add('active');
+        section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
+    }
+
+
+    function collectFormData() {
+      const formData = {
+        api_kriptainvest: document.getElementById("api_kriptainvest").value,
+      };
+
+      // Находим контейнер со стратегиями
+      const strategiesContainer = document.getElementById("strategescontainer");
+
+      // Получаем все блоки стратегий
+      const strategyBlocks = strategiesContainer.querySelectorAll('[id^="strategy_"].content');
+
+      strategyBlocks.forEach(block => {
+        const strategyId = block.id; // Получаем полный ID блока (например "strategy_1")
+
+        // Извлекаем номер стратегии из ID
+        const strategyNum = strategyId.split('_')[1];
+
+        formData[strategyId] = {
+          APIKEY_OKX: block.querySelector(`#${strategyId}_apiKey`)?.value || '',
+          SECRET_OKX: block.querySelector(`#${strategyId}_secret`)?.value || '',
+          PASS_API_OKX: block.querySelector(`#${strategyId}_passApi`)?.value || '',
+          PERCENT: parseFloat(block.querySelector(`#${strategyId}_percent`)?.value) || 0,
+          STOP: parseFloat(block.querySelector(`#${strategyId}_stop`)?.value) || 0,
+          PROFIT: parseFloat(block.querySelector(`#${strategyId}_profit`)?.value) || 0,
+          TEST: block.querySelector(`#${strategyId}_test`)?.checked || false,
+          ACTIVE: block.querySelector(`#${strategyId}_active`)?.checked || false
+        };
+      });
+
+      return formData;
     }
 
     function sendData() {
-      let data = {
-        api_kriptainvest: document.getElementById("api_kriptainvest").value,
-        strategy_1: {
-          APIKEY_OKX: document.getElementById("apiKey1").value,
-          SECRET_OKX: document.getElementById("secret1").value,
-          PASS_API_OKX: document.getElementById("passApi1").value,
-          PERCENT: parseFloat(document.getElementById("percent1").value),
-          STOP: parseFloat(document.getElementById("stop1").value),
-          PROFIT: parseFloat(document.getElementById("profit1").value),
-          TEST: document.getElementById("test1").checked,
-          ACTIVE: document.getElementById("active1").checked
-        },
-        strategy_2: {
-          APIKEY_OKX: document.getElementById("apiKey2").value,
-          SECRET_OKX: document.getElementById("secret2").value,
-          PASS_API_OKX: document.getElementById("passApi2").value,
-          PERCENT: parseFloat(document.getElementById("percent2").value),
-          STOP: parseFloat(document.getElementById("stop2").value),
-          PROFIT: parseFloat(document.getElementById("profit2").value),
-          TEST: document.getElementById("test2").checked,
-          ACTIVE: document.getElementById("active2").checked
-        }
-      };
-      window.Telegram.WebApp.sendData(JSON.stringify(data));
+      const formData = collectFormData();
+      console.log('Collected data:', formData);
+      window.Telegram.WebApp.sendData(JSON.stringify(formData));
     }
 
     window.onload = function () {
-      let initData = window.Telegram.WebApp.initDataUnsafe;
-      if (initData && initData.query_id) {
-        let storedData = JSON.parse(initData.user.data || '{}');
-        document.getElementById("api_kriptainvest").value = storedData.api_kriptainvest || "";
-        document.getElementById("apiKey1").value = storedData.strategy_1?.APIKEY_OKX || "";
-        document.getElementById("secret1").value = storedData.strategy_1?.SECRET_OKX || "";
-        document.getElementById("passApi1").value = storedData.strategy_1?.PASS_API_OKX || "";
-        document.getElementById("percent1").value = storedData.strategy_1?.PERCENT || "";
-        document.getElementById("stop1").value = storedData.strategy_1?.STOP || "";
-        document.getElementById("profit1").value = storedData.strategy_1?.PROFIT || "";
-        document.getElementById("test1").checked = storedData.strategy_1?.TEST || false;
-        document.getElementById("active1").checked = storedData.strategy_1?.ACTIVE || false;
+      const urlParams = new URLSearchParams(window.location.search);
+      const startParam = urlParams.get('start');
 
-        document.getElementById("apiKey2").value = storedData.strategy_2?.APIKEY_OKX || "";
-        document.getElementById("secret2").value = storedData.strategy_2?.SECRET_OKX || "";
-        document.getElementById("passApi2").value = storedData.strategy_2?.PASS_API_OKX || "";
-        document.getElementById("percent2").value = storedData.strategy_2?.PERCENT || "";
-        document.getElementById("stop2").value = storedData.strategy_2?.STOP || "";
-        document.getElementById("profit2").value = storedData.strategy_2?.PROFIT || "";
-        document.getElementById("test2").checked = storedData.strategy_2?.TEST || false;
-        document.getElementById("active2").checked = storedData.strategy_2?.ACTIVE || false;
+      if (startParam) {
+        try {
+          const decodedData = atob(startParam);
+          const userData = JSON.parse(decodedData);
+          generateForm(userData);
+        } catch (e) {
+          console.error('Error parsing start param:', e);
+        }
       }
+
+      if (window.Telegram && window.Telegram.WebApp) {
+        Telegram.WebApp.expand();
+        Telegram.WebApp.ready();
+      }
+    }
+
+    function generateForm(data) {
+      document.getElementById("api_kriptainvest").value = data.api_kriptainvest || "";
+      const strategiesContainer = document.getElementById("strategescontainer");
+      Object.keys(data).forEach((key, index) => {
+        if (key.startsWith("strategy_")) {
+          const strategy = data[key];
+          const strategyId = key//`strategy${index}`;
+          const toggleId = `toggle${index}`;
+          const strategyBlock = document.createElement("div");
+          strategyBlock.classList.add("strategy-block");
+          strategyBlock.innerHTML = `
+            <div class="toggle-section" onclick="toggleSection('${strategyId}')">
+                ${key.replace("_", " ")} <span class="arrow">▼</span>
+            </div>
+            <div id="${strategyId}" class="content">
+                ${createInputField(`${strategyId}_apiKey`, "API KEY", strategy.APIKEY_OKX)}
+                ${createInputField(`${strategyId}_secret`, "SECRET", strategy.SECRET_OKX)}
+                ${createInputField(`${strategyId}_passApi`, "PASS API", strategy.PASS_API_OKX)}
+                ${createInputField(`${strategyId}_percent`, "Процент", strategy.PERCENT, "number")}
+                ${createInputField(`${strategyId}_stop`, "Стоп", strategy.STOP, "number")}
+                ${createInputField(`${strategyId}_profit`, "Профит", strategy.PROFIT, "number")}
+                <div class="highlighted">
+                    ${createSwitch(`${strategyId}_test`, "Тест", strategy.TEST)}
+                    ${createSwitch(`${strategyId}_active`, "Активный", strategy.ACTIVE)}
+                </div>
+            </div>
+          `;
+          strategiesContainer.appendChild(strategyBlock);
+        }
+      });
+    }
+
+    function createInputField(id, label, value = "", type = "text") {
+      return `
+        <div class="form-group">
+            <label>${label}</label>
+            <div class="input-wrapper">
+                <input type="${type}" id="${id}" value="${value}">
+                <button class="clear-btn" onclick="clearField('${id}')">×</button>
+            </div>
+        </div>
+      `;
+    }
+
+    function createSwitch(id, label, isChecked) {
+      return `
+        <div class="switch-container">
+            <span class="switch-label">${label}</span>
+            <label class="switch">
+                <input type="checkbox" id="${id}" ${isChecked ? "checked" : ""}>
+                <span class="slider"></span>
+            </label>
+        </div>
+      `;
     }
   </script>
 </body>
