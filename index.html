@@ -2,17 +2,17 @@
 <html lang="ru">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OKX - BOT</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <style>
-
     * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: Arial, sans-serif;
@@ -20,7 +20,6 @@
       background-color: var(--tg-theme-bg-color, #f8f9fa);
       color: var(--tg-theme-text-color, #212529);
       padding: 20px;
-      box-sizing: border-box;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -44,7 +43,6 @@
     .content-wrapper {
       flex-grow: 1;
       overflow-y: auto;
-      overflow-x: hidden;
       padding-bottom: 20px;
     }
 
@@ -70,7 +68,8 @@
       position: relative;
     }
 
-    input {
+    input[type="text"],
+    input[type="number"] {
       width: 100%;
       padding: 12px 35px 12px 12px;
       border: 1px solid var(--tg-theme-hint-color, #ced4da);
@@ -79,7 +78,6 @@
       color: var(--tg-theme-text-color, #000);
       font-size: 16px;
       outline: none;
-      box-sizing: border-box;
       transition: border-color 0.2s;
     }
 
@@ -91,25 +89,27 @@
       position: absolute;
       right: 10px;
       top: 50%;
-      transform: translateY(-50%);
+      transform: translateY(-100%);
       cursor: pointer;
       background: none;
       border: none;
-      font-size: 18px;
+      font-size: 14px;
       color: #999;
-      padding: 0;
-      margin: 0;
+      width: 18px;
+      height: 18px;
       line-height: 1;
-      width: 20px;
-      height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0;
     }
 
     .clear-btn:hover {
       color: #666;
+      background: none;
+      box-shadow: none;
     }
+
 
     .toggle-section {
       cursor: pointer;
@@ -147,6 +147,10 @@
       background-color: var(--tg-theme-bg-color, #ffffff);
     }
 
+    .content.show {
+      display: block;
+    }
+
     .switch-container {
       display: flex;
       justify-content: space-between;
@@ -173,8 +177,6 @@
       opacity: 0;
       width: 0;
       height: 0;
-      padding: 0;
-      position: absolute;
     }
 
     .slider {
@@ -239,282 +241,108 @@
     .highlighted {
       margin-top: 15px;
     }
-
-    input, button, .toggle-section {
-      width: 100%;
-    }
   </style>
 </head>
 
 <body>
-  <div class="container">
+  <div id="app" class="container">
     <h2>Настройки API</h2>
-
     <div class="content-wrapper">
       <div class="form-group">
         <label>API KRIPTAINVEST URL</label>
         <div class="input-wrapper">
-          <input type="text" id="api_kriptainvest">
-          <button class="clear-btn" onclick="clearField('api_kriptainvest')">×</button>
+          <input type="text" v-model="api_kriptainvest" />
+          <button class="clear-btn" @click="api_kriptainvest = ''">×</button>
         </div>
       </div>
 
-      <div id="strategescontainer">
-        <!--  <div class="toggle-section" onclick="toggleSection('strategy1')">
-          <span>Стратегия 1</span>
-          <span class="arrow">▼</span>
+      <div v-for="(strategy, key) in strategies" :key="key">
+        <div class="toggle-section" :class="{active: strategy.show}" @click="strategy.show = !strategy.show">
+          {{ key.replace('_', ' ') }} <span class="arrow" :class="{open: strategy.show}">▼</span>
         </div>
-        <div id="strategy1" class="content">
-          <div class="form-group">
-            <label>API KEY</label>
+        <div class="content" :class="{show: strategy.show}">
+          <div class="form-group" v-for="field in textFields">
+            <label>{{ field.label }}</label>
             <div class="input-wrapper">
-              <input type="text" id="apiKey1">
-              <button class="clear-btn" onclick="clearField('apiKey1')">×</button>
+              <input :type="field.type" v-model="strategy[field.key]" />
+              <button v-if="field.type !== 'number'" class="clear-btn" @click="strategy[field.key] = ''">×</button>
             </div>
           </div>
-          <div class="form-group">
-            <label>SECRET</label>
-            <div class="input-wrapper">
-              <input type="text" id="secret1">
-              <button class="clear-btn" onclick="clearField('secret1')">×</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>PASS API</label>
-            <div class="input-wrapper">
-              <input type="text" id="passApi1">
-              <button class="clear-btn" onclick="clearField('passApi1')">×</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Процент</label>
-            <input type="number" id="percent1">
-          </div>
-          <div class="form-group">
-            <label>Стоп</label>
-            <input type="number" id="stop1">
-          </div>
-          <div class="form-group">
-            <label>Профит</label>
-            <input type="number" id="profit1">
-          </div>
-
           <div class="highlighted">
-            <div class="switch-container">
-              <span class="switch-label">Тест</span>
+            <div class="switch-container" v-for="field in switchFields">
+              <span class="switch-label">{{ field.label }}</span>
               <label class="switch">
-                <input type="checkbox" id="test1">
-                <span class="slider"></span>
-              </label>
-            </div>
-            <div class="switch-container">
-              <span class="switch-label">Активный</span>
-              <label class="switch">
-                <input type="checkbox" id="active1">
+                <input type="checkbox" v-model="strategy[field.key]" />
                 <span class="slider"></span>
               </label>
             </div>
           </div>
         </div>
-
-        <div class="toggle-section" onclick="toggleSection('strategy2')">
-          <span>Стратегия 2</span>
-          <span class="arrow">▼</span>
-        </div>
-        <div id="strategy2" class="content">
-          <div class="form-group">
-            <label>API KEY</label>
-            <div class="input-wrapper">
-              <input type="text" id="apiKey2">
-              <button class="clear-btn" onclick="clearField('apiKey2')">×</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>SECRET</label>
-            <div class="input-wrapper">
-              <input type="text" id="secret2">
-              <button class="clear-btn" onclick="clearField('secret2')">×</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>PASS API</label>
-            <div class="input-wrapper">
-              <input type="text" id="passApi2">
-              <button class="clear-btn" onclick="clearField('passApi2')">×</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Процент</label>
-            <input type="number" id="percent2">
-          </div>
-          <div class="form-group">
-            <label>Стоп</label>
-            <input type="number" id="stop2">
-          </div>
-          <div class="form-group">
-            <label>Профит</label>
-            <input type="number" id="profit2">
-          </div>
-
-          <div class="highlighted">
-            <div class="switch-container">
-              <span class="switch-label">Тест</span>
-              <label class="switch">
-                <input type="checkbox" id="test2">
-                <span class="slider"></span>
-              </label>
-            </div>
-            <div class="switch-container">
-              <span class="switch-label">Активный</span>
-              <label class="switch">
-                <input type="checkbox" id="active2">
-                <span class="slider"></span>
-              </label>
-            </div>
-          </div>
-        </div> -->
       </div>
     </div>
-
-    <button onclick="sendData()">Сохранить</button>
+    <button @click="sendData">Сохранить</button>
   </div>
 
   <script>
-    function clearField(id) {
-      document.getElementById(id).value = "";
-    }
+    const { createApp } = Vue;
 
-    function toggleSection(id) {
-      const section = document.getElementById(id);
-      const toggle = section.previousElementSibling;
-      const arrow = toggle.querySelector('.arrow');
-
-      if (section.style.display === "block") {
-        section.style.display = "none";
-        arrow.classList.remove('open');
-        toggle.classList.remove('active');
-      } else {
-        section.style.display = "block";
-        arrow.classList.add('open');
-        toggle.classList.add('active');
-        section.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-    }
-
-
-    function collectFormData() {
-      const formData = {
-        api_kriptainvest: document.getElementById("api_kriptainvest").value,
-      };
-
-      // Находим контейнер со стратегиями
-      const strategiesContainer = document.getElementById("strategescontainer");
-
-      // Получаем все блоки стратегий
-      const strategyBlocks = strategiesContainer.querySelectorAll('[id^="strategy_"].content');
-
-      strategyBlocks.forEach(block => {
-        const strategyId = block.id; // Получаем полный ID блока (например "strategy_1")
-
-        // Извлекаем номер стратегии из ID
-        const strategyNum = strategyId.split('_')[1];
-
-        formData[strategyId] = {
-          APIKEY_OKX: block.querySelector(`#${strategyId}_apiKey`)?.value || '',
-          SECRET_OKX: block.querySelector(`#${strategyId}_secret`)?.value || '',
-          PASS_API_OKX: block.querySelector(`#${strategyId}_passApi`)?.value || '',
-          PERCENT: parseFloat(block.querySelector(`#${strategyId}_percent`)?.value) || 0,
-          STOP: parseFloat(block.querySelector(`#${strategyId}_stop`)?.value) || 0,
-          PROFIT: parseFloat(block.querySelector(`#${strategyId}_profit`)?.value) || 0,
-          TEST: block.querySelector(`#${strategyId}_test`)?.checked || false,
-          ACTIVE: block.querySelector(`#${strategyId}_active`)?.checked || false
+    createApp({
+      data() {
+        return {
+          api_kriptainvest: '',
+          strategies: {},
+          textFields: [
+            { key: 'APIKEY_OKX', label: 'API KEY', type: 'text' },
+            { key: 'SECRET_OKX', label: 'SECRET', type: 'text' },
+            { key: 'PASS_API_OKX', label: 'PASS API', type: 'text' },
+            { key: 'PERCENT', label: 'Процент', type: 'number' },
+            { key: 'STOP', label: 'Стоп', type: 'number' },
+            { key: 'PROFIT', label: 'Профит', type: 'number' },
+            { key: 'AVERAGING_PERCENT', label: 'Минус в % когда усредняться', type: 'number' }
+          ],
+          switchFields: [
+            { key: 'TEST', label: 'Тест' },
+            { key: 'ACTIVE', label: 'Активный' },
+            { key: 'AVERAGING', label: 'Усреднение' }
+          ]
         };
-      });
-
-      return formData;
-    }
-
-    function sendData() {
-      const formData = collectFormData();
-      console.log('Collected data:', formData);
-      window.Telegram.WebApp.sendData(JSON.stringify(formData));
-    }
-
-    window.onload = function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const startParam = urlParams.get('start');
-
-      if (startParam) {
-        try {
-          const decodedData = atob(startParam);
-          const userData = JSON.parse(decodedData);
-          generateForm(userData);
-        } catch (e) {
-          console.error('Error parsing start param:', e);
+      },
+      methods: {
+        sendData() {
+          const payload = { api_kriptainvest: this.api_kriptainvest };
+          for (const key in this.strategies) {
+            const { show, ...data } = this.strategies[key];
+            payload[key] = data;
+          }
+          Telegram.WebApp.sendData(JSON.stringify(payload));
+        },
+        loadData() {
+          const params = new URLSearchParams(window.location.search);
+          const encoded = params.get('start');
+          if (encoded) {
+            try {
+              const decoded = atob(encoded);
+              const data = JSON.parse(decoded);
+              this.api_kriptainvest = data.api_kriptainvest || '';
+              for (const key in data) {
+                if (key.startsWith('strategy_')) {
+                  this.strategies[key] = { ...data[key], show: false };
+                }
+              }
+            } catch (e) {
+              console.error("Ошибка декодирования параметра:", e);
+            }
+          }
+        }
+      },
+      mounted() {
+        this.loadData();
+        if (Telegram && Telegram.WebApp) {
+          Telegram.WebApp.expand();
+          Telegram.WebApp.ready();
         }
       }
-
-      if (window.Telegram && window.Telegram.WebApp) {
-        Telegram.WebApp.expand();
-        Telegram.WebApp.ready();
-      }
-    }
-
-    function generateForm(data) {
-      document.getElementById("api_kriptainvest").value = data.api_kriptainvest || "";
-      const strategiesContainer = document.getElementById("strategescontainer");
-      Object.keys(data).forEach((key, index) => {
-        if (key.startsWith("strategy_")) {
-          const strategy = data[key];
-          const strategyId = key//`strategy${index}`;
-          const toggleId = `toggle${index}`;
-          const strategyBlock = document.createElement("div");
-          strategyBlock.classList.add("strategy-block");
-          strategyBlock.innerHTML = `
-            <div class="toggle-section" onclick="toggleSection('${strategyId}')">
-                ${key.replace("_", " ")} <span class="arrow">▼</span>
-            </div>
-            <div id="${strategyId}" class="content">
-                ${createInputField(`${strategyId}_apiKey`, "API KEY", strategy.APIKEY_OKX)}
-                ${createInputField(`${strategyId}_secret`, "SECRET", strategy.SECRET_OKX)}
-                ${createInputField(`${strategyId}_passApi`, "PASS API", strategy.PASS_API_OKX)}
-                ${createInputField(`${strategyId}_percent`, "Процент", strategy.PERCENT, "number")}
-                ${createInputField(`${strategyId}_stop`, "Стоп", strategy.STOP, "number")}
-                ${createInputField(`${strategyId}_profit`, "Профит", strategy.PROFIT, "number")}
-                <div class="highlighted">
-                    ${createSwitch(`${strategyId}_test`, "Тест", strategy.TEST)}
-                    ${createSwitch(`${strategyId}_active`, "Активный", strategy.ACTIVE)}
-                </div>
-            </div>
-          `;
-          strategiesContainer.appendChild(strategyBlock);
-        }
-      });
-    }
-
-    function createInputField(id, label, value = "", type = "text") {
-      return `
-        <div class="form-group">
-            <label>${label}</label>
-            <div class="input-wrapper">
-                <input type="${type}" id="${id}" value="${value}">
-                <button class="clear-btn" onclick="clearField('${id}')">×</button>
-            </div>
-        </div>
-      `;
-    }
-
-    function createSwitch(id, label, isChecked) {
-      return `
-        <div class="switch-container">
-            <span class="switch-label">${label}</span>
-            <label class="switch">
-                <input type="checkbox" id="${id}" ${isChecked ? "checked" : ""}>
-                <span class="slider"></span>
-            </label>
-        </div>
-      `;
-    }
+    }).mount('#app');
   </script>
 </body>
 
