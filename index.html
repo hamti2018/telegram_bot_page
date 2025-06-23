@@ -258,7 +258,7 @@
 
       <div v-for="(strategy, key) in strategies" :key="key">
         <div class="toggle-section" :class="{active: strategy.show}" @click="strategy.show = !strategy.show">
-          {{ key.replace('_', ' ') }} <span class="arrow" :class="{open: strategy.show}">▼</span>
+          {{ strategy.name }} <span class="arrow" :class="{open: strategy.show}">▼</span>
         </div>
         <div class="content" :class="{show: strategy.show}">
           <div class="form-group" v-for="field in textFields">
